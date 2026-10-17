@@ -1,0 +1,27 @@
+{
+  "title": "AI & Edge Usage",
+  "theme": "neutral",
+  "gateways": ["storefront", "support"],
+  "viaGateway": {
+    "anthropic_key": ["*-gateway"],
+    "openai_key": [],
+    "openai_project": []
+  },
+  "apps": [
+    { "id": "storefront", "name": "Storefront", "match": {
+      "worker": ["storefront-*"], "d1": ["storefront-*"], "kv": ["storefront-*"], "r2": ["storefront-*"], "queue": ["storefront-*"],
+      "gateway": ["storefront"] } },
+    { "id": "support", "name": "Support Desk", "match": {
+      "worker": ["support-*"], "d1": ["support-*"], "queue": ["support-*"], "gateway": ["support"], "anthropic_key": ["support-escalations"] } },
+    { "id": "search", "name": "Search", "match": {
+      "worker": ["search-*"], "vectorize": ["search-*"], "workers_ai_model": ["@cf/baai/*"] } },
+    { "id": "media", "name": "Media Pipeline", "match": {
+      "worker": ["media-*"], "r2": ["media-*"], "queue": ["media-*"], "openai_project": ["Media*"] } },
+    { "id": "shared", "name": "Shared / platform", "shared": true, "match": {
+      "worker": ["*-site", "usage-dashboard", "auth-*"], "d1": ["usage-dashboard", "auth-*"], "kv": ["sessions"] } }
+  ],
+  "notes": [
+    "Patterns use * as a wildcard and are case-insensitive. The first app whose pattern matches wins.",
+    "Anything that matches no app is reported as Unattributed."
+  ]
+}
