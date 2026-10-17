@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "usage-dashboard",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // Only reachable through a custom domain protected by Cloudflare Access. No workers.dev or preview URLs.
+  "workers_dev": false,
+  "preview_urls": false,
+  // `npm run setup` adds your custom domain here, e.g.
+  // "routes": [{ "pattern": "usage.example.com", "custom_domain": true }],
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
+  "d1_databases": [
+    // Placeholder id: `npm run setup` and the Deploy to Cloudflare button replace it with your database's id.
+    { "binding": "DB", "database_name": "usage-dashboard", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "migrations" }
+  ],
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "observability": { "enabled": true }
+  // All settings are Worker secrets so redeploys never reset them (see .dev.vars.example):
+  //   CF_ACCOUNT_ID, CF_API_TOKEN, ANTHROPIC_ADMIN_KEY, OPENAI_ADMIN_KEY, CONFIG_PROFILE,
+  //   ACCESS_TEAM_DOMAIN, ACCESS_AUD
+}

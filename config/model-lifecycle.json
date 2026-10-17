@@ -1,0 +1,20 @@
+{
+  "_source": "Vendor deprecation pages, checked 2026-10-16. Update when vendors announce changes; the dashboard flags any model in use that matches an entry here.",
+  "_sources": {
+    "anthropic": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+    "openai": "https://developers.openai.com/api/docs/deprecations",
+    "workers-ai": "https://developers.cloudflare.com/workers-ai/models/"
+  },
+  "_match": "Longest prefix of the model id wins. Use dated snapshot ids for OpenAI: its deprecations page does not cover undated aliases.",
+  "models": [
+    { "match": "claude-sonnet-4-5", "status": "deprecated", "deprecated": "2026-09-30", "retires": "2026-11-30", "replacement": "claude-sonnet-5-5", "source": "anthropic" },
+    { "match": "claude-haiku-4-5", "status": "watch", "retiresNotBefore": "2026-10-15", "note": "Active, but its earliest possible retirement date has passed; a deprecation notice (at least 60 days ahead) may come at any time.", "source": "anthropic" },
+    { "match": "claude-opus-4-5", "status": "watch", "retiresNotBefore": "2026-11-24", "source": "anthropic" },
+    { "match": "claude-sonnet-4-20250514", "status": "retired", "retires": "2026-06-15", "replacement": "claude-sonnet-5-5", "source": "anthropic" },
+    { "match": "claude-opus-4-1", "status": "retired", "retires": "2026-08-05", "replacement": "claude-opus-4-8", "source": "anthropic" },
+    { "match": "claude-3-", "status": "retired", "replacement": "claude-haiku-5-5 / claude-sonnet-5-5", "source": "anthropic" },
+    { "match": "gpt-5-2025-08-07", "status": "deprecated", "deprecated": "2026-06-11", "retires": "2026-12-11", "replacement": "gpt-5.6-sol", "source": "openai" },
+    { "match": "gpt-5-mini-2025-08-07", "status": "deprecated", "deprecated": "2026-06-11", "retires": "2026-12-11", "replacement": "gpt-5.6-terra", "source": "openai" },
+    { "match": "gpt-4o-mini-2024-07-18", "status": "deprecated", "deprecated": "2026-10-14", "retires": "2027-01-14", "replacement": "gpt-6-luna", "source": "openai" }
+  ]
+}

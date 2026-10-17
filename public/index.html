@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Usage Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script>try{var b=localStorage.getItem("ud-brand");if(b)document.documentElement.dataset.brand=b}catch(e){}</script>
+<style>
+/* ---------- tokens ---------- */
+:root{
+  /* neutral default palette (slate + blue) */
+  --ink-900:#0F172A; --ink-800:#1E293B; --ink-700:#334155;
+  --accent-500:#2563EB; --accent-300:#60A5FA; --accent-700:#1E40AF;
+  --paper:#F8FAFC; --paper-2:#E2E8F0;
+
+  --bg:var(--paper); --surface:#FFFFFF; --elevated:var(--paper-2);
+  --text:var(--ink-900); --text-2:rgba(10,22,40,.65); --text-3:rgba(10,22,40,.45);
+  --divider:var(--paper-2); --line:rgba(10,22,40,.10);
+  --accent:var(--accent-500); --accent-ink:#FFFFFF;
+  --wm-prefix:var(--ink-900); --wm-suffix:var(--accent-500);
+  --heat-0:#1D5C66; --heat-1:#C9A84C; --heat-2:#C85A2E;
+  --ok:#2E8B57; --warn:#C27C1A; --bad:#B23A3A;
+  --shadow:0 1px 2px rgba(10,22,40,.06), 0 12px 32px -16px rgba(10,22,40,.18);
+  --r-card:16px; --r-btn:12px; --r-badge:6px;
+  --font-ui:'Inter',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace; --font-brand:'DM Serif Display',Georgia,serif;
+  --dur:.6s; --ease:cubic-bezier(.16,1,.3,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:var(--ink-900); --surface:var(--ink-800); --elevated:var(--ink-700);
+    --text:var(--paper); --text-2:rgba(245,240,232,.65); --text-3:rgba(245,240,232,.45);
+    --divider:var(--ink-700); --line:rgba(245,240,232,.10);
+    --accent:var(--accent-300); --wm-prefix:#FFFFFF; --wm-suffix:var(--accent-300);
+    --heat-0:#1F6F7A; --heat-1:#E4CC7A; --heat-2:#E0703F;
+    --ok:#5BC48A; --warn:#E3A33A; --bad:#E06B6B;
+    --shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 20px 48px -24px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:var(--ink-900); --surface:var(--ink-800); --elevated:var(--ink-700);
+  --text:var(--paper); --text-2:rgba(245,240,232,.65); --text-3:rgba(245,240,232,.45);
+  --divider:var(--ink-700); --line:rgba(245,240,232,.10);
+  --accent:var(--accent-300); --wm-prefix:#FFFFFF; --wm-suffix:var(--accent-300);
+  --heat-0:#1F6F7A; --heat-1:#E4CC7A; --heat-2:#E0703F;
+  --ok:#5BC48A; --warn:#E3A33A; --bad:#E06B6B;
+  --shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 20px 48px -24px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+/* "navy-gold" preset: deep navy surfaces, gold accent, cream paper */
+:root[data-brand="navy-gold"]{
+  --ink-900:#0A1628; --ink-800:#132240; --ink-700:#1A3058;
+  --accent-500:#C9A84C; --accent-300:#E4CC7A; --accent-700:#8A7234;
+  --paper:#F5F0E8; --paper-2:#E8E0D0;
+  --accent-ink:#0A1628;
+}
+
+/* ---------- base ---------- */
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-ui); font-size:14px; line-height:1.45;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  background-image:radial-gradient(1200px 600px at 80% -10%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 60%);
+}
+a{color:inherit}
+.mono{font-family:var(--font-mono)}
+.num{font-family:var(--font-mono); font-variant-numeric:tabular-nums}
+.wrap{max-width:1440px; margin:0 auto; padding:0 16px 64px}
+@media (min-width:900px){ .wrap{padding:0 32px 80px} }
+
+/* ---------- header ---------- */
+.topbar{
+  position:sticky; top:0; z-index:20; background:var(--ink-900); color:var(--paper);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.topbar-in{max-width:1440px; margin:0 auto; padding:10px 16px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+@media (min-width:900px){ .topbar-in{padding:12px 32px} }
+.wordmark{text-decoration:none; font:600 18px var(--font-ui); font-size:24px; letter-spacing:-.02em; line-height:1; display:inline-flex; white-space:nowrap}
+.wordmark.split{font-family:var(--font-brand); font-size:24px; font-weight:400}
+.wordmark .p{color:#FFFFFF; -webkit-text-fill-color:#FFFFFF}
+.wordmark .s{color:var(--accent-500); -webkit-text-fill-color:var(--accent-500)}
+.crumb{font-weight:500; color:var(--paper-2); font-size:13px; white-space:nowrap}
+.crumb b{color:var(--paper); font-weight:600}
+.badge.stale{border-color:var(--warn); color:var(--warn)}
+.badge{font:700 10px/1 var(--font-mono); letter-spacing:.12em; padding:5px 7px; border-radius:var(--r-badge); border:1px solid var(--accent-700); color:var(--accent-300); background:rgba(201,168,76,.08)}
+.spacer{flex:1}
+.seg{display:inline-flex; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:3px}
+.seg button{all:unset; cursor:pointer; font:600 12px var(--font-ui); color:var(--paper-2); padding:6px 12px; border-radius:8px; transition:background .25s, color .25s, transform .25s}
+.seg button:hover{color:#fff}
+.seg button[aria-pressed="true"]{background:var(--accent-500); color:var(--accent-ink)}
+.seg button:focus-visible{outline:2px solid var(--accent-300); outline-offset:2px}
+.iconbtn{all:unset; cursor:pointer; width:34px; height:34px; display:inline-grid; place-items:center; border-radius:10px; color:var(--paper-2); border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); transition:background .2s}
+.iconbtn:hover{background:rgba(255,255,255,.1); color:#fff}
+.iconbtn:focus-visible{outline:2px solid var(--accent-300)}
+.iconbtn svg{width:16px;height:16px}
+
+/* ---------- page head ---------- */
+.pagehead{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; padding:28px 0 18px}
+.pagehead h1{font:600 24px/1.15 var(--font-ui); margin:0; letter-spacing:-.01em}
+.pagehead p{margin:6px 0 0; color:var(--text-2); max-width:62ch}
+.filterchip{display:none; align-items:center; gap:8px; padding:6px 8px 6px 12px; border-radius:999px; background:var(--surface); border:1px solid var(--line); font-size:12px; font-weight:500; box-shadow:var(--shadow)}
+.filterchip.on{display:inline-flex}
+.filterchip b{font-family:var(--font-mono); font-weight:700; color:var(--accent)}
+.filterchip button{all:unset; cursor:pointer; width:20px; height:20px; border-radius:50%; display:grid; place-items:center; background:var(--elevated); font-size:12px; line-height:1}
+.filterchip button:hover{background:var(--accent); color:var(--accent-ink)}
+
+/* ---------- cards & grid ---------- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card); box-shadow:var(--shadow); padding:18px; position:relative; overflow:hidden}
+.card h2{font:600 15px/1.2 var(--font-ui); margin:0; letter-spacing:-.005em}
+.card .sub{color:var(--text-3); font-size:12px; margin-top:3px}
+.cardhead{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px}
+.grid{display:grid; gap:16px; margin-top:16px}
+.g-2{grid-template-columns:1fr}
+@media (min-width:980px){ .g-2{grid-template-columns:5fr 7fr} }
+.src{font:500 10px/1 var(--font-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--text-3); padding:4px 6px; border:1px dashed var(--line); border-radius:6px; white-space:nowrap}
+
+/* ---------- KPI strip ---------- */
+.kpis{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+@media (min-width:700px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (min-width:1180px){ .kpis{grid-template-columns:repeat(6,minmax(0,1fr)); gap:14px} }
+.kpi{padding:14px 16px 12px; min-width:0}
+.kpi .lbl{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-3)}
+.kpi .val{font:700 26px/1.05 var(--font-mono); letter-spacing:-.02em; margin-top:8px; font-variant-numeric:tabular-nums; white-space:nowrap}
+.kpi .val small{font-size:14px; color:var(--text-2); font-weight:400}
+.kpi .delta{font:500 11px var(--font-ui); margin-top:4px; color:var(--text-2)}
+.kpi .delta.up{color:var(--ok)} .kpi .delta.down{color:var(--bad)}
+.kpi svg.spark{display:block; width:100%; height:34px; margin-top:8px; overflow:visible}
+.spark .area{fill:url(#sparkfill); opacity:.9}
+.spark .line{fill:none; stroke:var(--accent); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
+.spark .dot{fill:var(--accent)}
+.meter{height:6px; border-radius:3px; background:var(--elevated); margin-top:10px; overflow:hidden}
+.meter i{display:block; height:100%; width:100%; transform-origin:left; transform:scaleX(0); background:linear-gradient(90deg,var(--heat-0),var(--heat-1)); transition:transform .9s var(--ease)}
+.meter i.over{background:linear-gradient(90deg,var(--heat-1),var(--heat-2))}
+
+/* ---------- hero flow ---------- */
+.hero{padding:0; margin-top:16px}
+.hero .cardhead{padding:18px 18px 0}
+.legend{display:flex; align-items:center; gap:10px; font-size:11px; color:var(--text-2); flex-wrap:wrap}
+.legend .bar{width:120px; height:8px; border-radius:4px; background:linear-gradient(90deg,var(--heat-0),var(--heat-1),var(--heat-2))}
+.legend .dash{width:28px; height:0; border-top:2px dashed var(--text-3)}
+.legend .dot{width:8px;height:8px;border-radius:50%;background:var(--accent); box-shadow:0 0 8px var(--accent)}
+.flow-wrap{position:relative; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:8px 0 10px}
+.flow-stage{position:relative; min-width:1300px; height:700px}
+.flow-stage svg,.flow-stage canvas{position:absolute; inset:0; width:100%; height:100%}
+.flow-stage canvas{pointer-events:none}
+.colhead{font:600 10px var(--font-ui); letter-spacing:.14em; text-transform:uppercase; fill:var(--text-3)}
+.link{fill:none; stroke-linecap:butt; opacity:.55; transition:opacity .35s var(--ease); cursor:pointer; mix-blend-mode:normal}
+.link.direct{stroke-dasharray:12 7}
+.motion .link.direct{animation:dashdrift 6s linear infinite}
+.motion .link{animation:linkpulse 4.2s ease-in-out infinite, dashdrift 0s}
+.motion .link.direct{animation:linkpulse 4.2s ease-in-out infinite, dashdrift 7s linear infinite}
+@keyframes linkpulse{0%,100%{opacity:.48}50%{opacity:.66}}
+@keyframes dashdrift{to{stroke-dashoffset:-38}}
+.dimmed .link{opacity:.07 !important; animation:none}
+.dimmed .link.hi{opacity:.9 !important}
+.node rect{transition:opacity .35s; cursor:pointer; stroke:var(--surface); stroke-width:1}
+.node.direct rect{stroke:var(--warn); stroke-dasharray:3 2}
+.node .lead{stroke:var(--text-3); stroke-width:1; opacity:0; transition:opacity .3s}
+.node text{font:500 12px var(--font-ui); fill:var(--text); paint-order:stroke; stroke:var(--surface); stroke-width:4px; stroke-linejoin:round; pointer-events:none}
+.node text.id{font:500 11px var(--font-mono); fill:var(--text-2)}
+.node text.meta{font:500 10px var(--font-mono); fill:var(--text-3)}
+.node text.warn{fill:var(--warn); font-weight:600}
+.node.app rect{cursor:pointer}
+.dimmed .node{opacity:.18; transition:opacity .35s}
+.dimmed .node.hi{opacity:1}
+.node.sel rect{stroke:var(--accent); stroke-width:2}
+.tip{
+  position:absolute; z-index:5; pointer-events:none; min-width:220px; max-width:300px; padding:10px 12px; border-radius:12px;
+  background:color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter:blur(10px); border:1px solid var(--line); box-shadow:var(--shadow);
+  opacity:0; transform:translateY(4px); transition:opacity .18s, transform .18s;
+}
+.tip.on{opacity:1; transform:none}
+.tip h4{margin:0 0 2px; font:600 13px var(--font-ui)}
+.tip .k{font:400 10px var(--font-mono); color:var(--text-3); letter-spacing:.04em; margin-bottom:8px; word-break:break-all}
+.tip dl{display:grid; grid-template-columns:1fr auto; gap:3px 14px; margin:0; font-size:12px}
+.tip dt{color:var(--text-2)} .tip dd{margin:0; font-family:var(--font-mono); text-align:right; font-variant-numeric:tabular-nums}
+.tip .route{margin-top:8px; padding-top:8px; border-top:1px solid var(--line); font:400 10.5px var(--font-mono); color:var(--text-2); line-height:1.5; word-break:break-word}
+.tip .route b{color:var(--accent); font-weight:700}
+.hint{font-size:11px; color:var(--text-3); padding:0 18px 14px}
+
+/* ---------- spend by source ---------- */
+.srcrow{display:grid; grid-template-columns:1fr auto; gap:6px 12px; padding:12px 0; border-top:1px solid var(--line)}
+.srcrow:first-of-type{border-top:0; padding-top:4px}
+.srcrow .name{font-weight:600}
+.srcrow .amt{font:700 18px var(--font-mono); font-variant-numeric:tabular-nums}
+.srcrow .bar{grid-column:1/-1; height:8px; border-radius:4px; background:var(--elevated); overflow:hidden}
+.srcrow .bar i{display:block; height:100%; transform-origin:left; transform:scaleX(0); transition:transform .9s var(--ease); border-radius:4px}
+.srcrow .note{grid-column:1/-1; display:flex; justify-content:space-between; gap:8px; font-size:11px; color:var(--text-3); flex-wrap:wrap}
+.srcrow .note .share{font-family:var(--font-mono)}
+.callout{margin-top:12px; padding:10px 12px; border-radius:10px; background:var(--elevated); font-size:12px; color:var(--text-2); line-height:1.5}
+
+/* ---------- bubble chart ---------- */
+.bubble-wrap{position:relative}
+.bubble{width:100%; height:300px; display:block; overflow:visible}
+.bubble .axis{stroke:var(--line)} .bubble .grid{stroke:var(--line); stroke-dasharray:2 4}
+.bubble .tick{font:400 10px var(--font-mono); fill:var(--text-3)}
+.bubble .axl{font:500 10px var(--font-ui); fill:var(--text-3); letter-spacing:.08em; text-transform:uppercase}
+.bubble circle{transition:cx .8s var(--ease), cy .8s var(--ease), r .8s var(--ease), opacity .4s; stroke:var(--surface); stroke-width:1.5; cursor:pointer}
+.bubble circle:hover{filter:brightness(1.15)}
+.bubble .bl{font:400 10px var(--font-mono); fill:var(--text-2); transition:x .8s var(--ease), y .8s var(--ease), opacity .4s; pointer-events:none; paint-order:stroke; stroke:var(--surface); stroke-width:3px}
+
+/* ---------- tables ---------- */
+.tscroll{overflow-x:auto; margin:0 -18px; padding:0 18px}
+table{width:100%; border-collapse:collapse; font-size:13px; min-width:720px}
+th{font:600 10.5px var(--font-ui); letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap}
+td{padding:10px; border-bottom:1px solid var(--line); vertical-align:middle; white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right} td.num{font-family:var(--font-mono); font-variant-numeric:tabular-nums}
+tbody tr{transition:background .2s}
+tbody tr.clickable{cursor:pointer} tbody tr.clickable:hover{background:color-mix(in srgb, var(--accent) 7%, transparent)}
+tbody tr.sel{background:color-mix(in srgb, var(--accent) 12%, transparent)}
+.app{font-weight:600} .app small{display:block; font:400 10.5px var(--font-mono); color:var(--text-3)}
+.chips{display:flex; flex-wrap:wrap; gap:4px; max-width:360px; white-space:normal}
+.chip{font:400 10.5px var(--font-mono); padding:3px 7px; border-radius:6px; background:var(--elevated); color:var(--text-2); border:1px solid transparent}
+.chip.direct{border-color:var(--warn); color:var(--warn)}
+.trend{width:110px; height:26px; display:block; overflow:visible}
+.trend path{fill:none; stroke:var(--accent); stroke-width:1.5; stroke-linecap:round}
+.trend .a{fill:var(--accent); opacity:.12; stroke:none}
+.gwpct{display:inline-flex; align-items:center; gap:6px}
+.gwpct i{width:46px; height:5px; border-radius:3px; background:var(--elevated); position:relative; overflow:hidden}
+.gwpct i::after{content:""; position:absolute; inset:0; transform-origin:left; transform:scaleX(var(--v,0)); background:var(--accent); transition:transform .8s var(--ease)}
+.cellfade{transition:opacity .25s} .cellfade.out{opacity:.25}
+
+/* ---------- cloudflare panel ---------- */
+.gauges{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 8px; margin-bottom:16px}
+@media (min-width:620px){ .gauges{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (min-width:1100px){ .gauges{grid-template-columns:repeat(8,minmax(0,1fr))} }
+.gauge{display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 4px; border-radius:12px; background:var(--elevated)}
+.gauge svg{width:84px; height:84px; display:block}
+.gauge .track{fill:none; stroke:var(--surface); stroke-width:7}
+.gauge .fill{fill:none; stroke:var(--accent); stroke-width:7; stroke-linecap:round; stroke-dasharray:201 201; stroke-dashoffset:201; transition:stroke-dashoffset 1.1s var(--ease), stroke .4s; transform:rotate(-90deg); transform-origin:50% 50%}
+.gauge .fill.hot{stroke:var(--heat-2)} .gauge .fill.warm{stroke:var(--heat-1)}
+.gauge .pct{font:700 15px var(--font-mono); fill:var(--text)}
+.gauge .nm{font:600 11px var(--font-ui); margin-top:4px}
+.gauge .vs{font:400 10px var(--font-mono); color:var(--text-3); margin-top:2px}
+.foot{margin-top:28px; font-size:12px; color:var(--text-3); line-height:1.6}
+.foot code{font-family:var(--font-mono); font-size:11px; color:var(--text-2)}
+
+
+/* ---------- billing ---------- */
+.nav{display:inline-flex; gap:4px}
+.nav a{font:600 12px var(--font-ui); color:var(--paper-2); text-decoration:none; padding:7px 10px; border-radius:8px; transition:background .2s,color .2s}
+.nav a:hover{background:rgba(255,255,255,.08); color:#fff}
+.anchor{scroll-margin-top:76px}
+@media (max-width:640px){ .nav{display:none} }
+.life{margin-top:16px}
+.liferows{display:grid; gap:8px}
+.lrow{display:grid; grid-template-columns:116px minmax(0,1.4fr) minmax(0,1fr) minmax(0,1.2fr); gap:6px 16px; align-items:center; padding:10px 12px; border-radius:10px; background:var(--elevated); border-left:3px solid var(--text-3); font-size:12.5px}
+.lrow.retired{border-left-color:var(--bad)} .lrow.urgent{border-left-color:var(--bad)} .lrow.deprecated{border-left-color:var(--warn)} .lrow.watch{border-left-color:var(--text-3)}
+.lrow .sev{justify-self:start; font:700 10px/1 var(--font-mono); letter-spacing:.08em; text-transform:uppercase; padding:5px 7px; border-radius:var(--r-badge); white-space:nowrap}
+.lrow.retired .sev,.lrow.urgent .sev{color:var(--bad); background:color-mix(in srgb, var(--bad) 14%, transparent)}
+.lrow.deprecated .sev{color:var(--warn); background:color-mix(in srgb, var(--warn) 14%, transparent)}
+.lrow.watch .sev{color:var(--text-2); background:color-mix(in srgb, var(--text-3) 18%, transparent)}
+.lrow .m{font:600 12px var(--font-mono); word-break:break-all}
+.lrow .m small{display:block; font:400 11px var(--font-ui); color:var(--text-2); margin-top:2px}
+.lrow .when{font-family:var(--font-mono); font-variant-numeric:tabular-nums}
+.lrow .when small,.lrow .apps small{display:block; color:var(--text-3); font:400 11px var(--font-ui)}
+.lrow a{color:var(--accent)}
+@media (max-width:760px){ .lrow{grid-template-columns:1fr} }
+.node text.eol{fill:var(--bad); font-weight:600}
+.empty{position:absolute; inset:0; display:none; place-items:center; text-align:center; color:var(--text-2); font-size:13px; padding:24px; pointer-events:none}
+.empty.on{display:grid}
+.empty b{display:block; font:600 16px var(--font-ui); color:var(--text); margin-bottom:4px}
+.bkpis{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:16px}
+@media (min-width:900px){ .bkpis{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.bkpi{padding:14px 16px; border-radius:12px; background:var(--elevated)}
+.bkpi .lbl{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-3)}
+.bkpi .val{font:700 24px/1.05 var(--font-mono); margin-top:6px; font-variant-numeric:tabular-nums}
+.bkpi .val small{font-size:13px; color:var(--text-2); font-weight:400}
+.bkpi .d{font-size:11px; color:var(--text-2); margin-top:4px}
+.bkpi .d.up{color:var(--bad)} .bkpi .d.down{color:var(--ok)}
+.split{height:6px; border-radius:3px; background:var(--elevated); margin-top:10px; overflow:hidden; display:flex; border:1px solid var(--line)}
+.split i{display:block; height:100%; transition:width .9s var(--ease)}
+.toggle{display:inline-flex; background:var(--elevated); border-radius:8px; padding:2px}
+.toggle button{all:unset; cursor:pointer; font:600 11px var(--font-ui); color:var(--text-2); padding:5px 10px; border-radius:6px; transition:background .25s,color .25s}
+.toggle button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+.toggle button:focus-visible{outline:2px solid var(--accent)}
+.mx{min-width:1180px; font-size:12px}
+.mx th{cursor:pointer; user-select:none; padding:8px 6px; position:relative}
+.mx th:hover{color:var(--text)}
+.mx th.on{color:var(--accent)}
+.mx th .ar{font-size:9px; margin-left:3px}
+.mx td{padding:0; border-bottom:1px solid var(--line)}
+.mx td.lab{padding:8px 10px; font-weight:600; white-space:nowrap; cursor:pointer}
+.mx td.lab small{display:block; font:400 10px var(--font-mono); color:var(--text-3)}
+.mx td.tot, .mx tfoot td{font-family:var(--font-mono); text-align:right; padding:8px 8px; font-variant-numeric:tabular-nums; font-weight:700}
+.mx tfoot td{border-top:2px solid var(--line); border-bottom:0; color:var(--text-2)}
+.mx tfoot td.lab{font-family:var(--font-ui); text-align:left}
+.cell{display:block; margin:2px; height:30px; border-radius:5px; font:500 11px var(--font-mono); text-align:right; padding:8px 7px 0; color:var(--text); transition:background .6s var(--ease), transform .2s; position:relative; cursor:default; font-variant-numeric:tabular-nums; min-width:62px}
+.cell.z{color:var(--text-3); font-weight:400}
+.cell:hover{transform:scale(1.06); z-index:2; outline:1px solid var(--accent)}
+.cell.hot{color:var(--ink-900)}
+.mx tr.sel td{background:color-mix(in srgb, var(--accent) 10%, transparent)}
+.btip{position:fixed; z-index:40; pointer-events:none; min-width:220px; padding:10px 12px; border-radius:12px; background:color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter:blur(10px); border:1px solid var(--line); box-shadow:var(--shadow); opacity:0; transform:translateY(4px); transition:opacity .15s, transform .15s; font-size:12px}
+.btip.on{opacity:1; transform:none}
+.btip h4{margin:0 0 6px; font:600 13px var(--font-ui)} .btip dl{display:grid; grid-template-columns:1fr auto; gap:3px 14px; margin:0} .btip dt{color:var(--text-2)} .btip dd{margin:0; font-family:var(--font-mono); text-align:right}
+.stack{display:grid; grid-template-columns:150px 1fr 64px; gap:8px 12px; align-items:center}
+.stack .nm{font-weight:600; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer}
+.stack .nm:hover{color:var(--accent)}
+.stack .bar{display:flex; height:18px; border-radius:5px; overflow:hidden; background:var(--elevated); transition:width .9s var(--ease)}
+.stack .bar i{display:block; height:100%; transition:width .9s var(--ease); border-right:1px solid var(--surface); cursor:default}
+.stack .bar i:hover{filter:brightness(1.2)}
+.stack .v{font:600 12px var(--font-mono); text-align:right; font-variant-numeric:tabular-nums}
+.klegend{display:flex; flex-wrap:wrap; gap:6px 12px; margin-top:12px; font-size:11px; color:var(--text-2)}
+.klegend span{display:inline-flex; align-items:center; gap:5px} .klegend b{width:10px; height:10px; border-radius:3px; display:inline-block}
+.tm{position:relative; height:360px; border-radius:12px; overflow:hidden; background:var(--elevated)}
+.tm .grp,.tm .leaf{position:absolute; transition:left .9s var(--ease), top .9s var(--ease), width .9s var(--ease), height .9s var(--ease), opacity .5s; box-sizing:border-box}
+.tm .grp{border:1px solid var(--surface); border-radius:6px}
+.tm .grp .gl{position:absolute; left:6px; top:4px; font:700 10px var(--font-ui); letter-spacing:.06em; text-transform:uppercase; color:#fff; opacity:.9; pointer-events:none; white-space:nowrap; overflow:hidden; max-width:calc(100% - 10px); text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.tm .leaf{border:1px solid rgba(255,255,255,.25); border-radius:4px; overflow:hidden; padding:16px 5px 0; font:500 10px var(--font-mono); color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.6); cursor:default}
+.tm .leaf:hover{filter:brightness(1.15); z-index:3}
+.tm .leaf b{display:block; font:400 10px var(--font-ui); opacity:.85}
+.allow{display:grid; gap:10px}
+.arow{display:grid; grid-template-columns:150px 1fr 150px; gap:6px 12px; align-items:center; font-size:12px}
+@media (max-width:760px){ .arow{grid-template-columns:1fr; gap:4px} .stack{grid-template-columns:100px 1fr 56px} }
+.arow .nm{font-weight:600}
+.arow .nm small{display:block; font:400 10px var(--font-mono); color:var(--text-3)}
+.arow .track{height:12px; border-radius:6px; background:var(--elevated); position:relative; overflow:hidden}
+.arow .track i{position:absolute; left:0; top:0; height:100%; transition:width .9s var(--ease)}
+.arow .track .inc{background:var(--heat-0)} .arow .track .ovr{background:var(--heat-2)}
+.arow .track::after{content:""; position:absolute; left:var(--mark,100%); top:0; bottom:0; width:2px; background:var(--text); opacity:.5}
+.arow .who{font-size:11px; color:var(--text-2); line-height:1.35}
+.arow .who b{color:var(--heat-2); font-weight:600}
+.note{margin-top:16px; padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:color-mix(in srgb, var(--accent) 6%, var(--surface)); font-size:12.5px; line-height:1.6; color:var(--text-2)}
+.note h3{margin:0 0 4px; font:600 13px var(--font-ui); color:var(--text)}
+.note code{font-family:var(--font-mono); font-size:11px; color:var(--text)}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition-duration:.01ms !important; animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="wordmark" id="wordmark" href="#">Usage</a>
+    <span class="crumb" id="crumb"><b>AI &amp; Edge Usage</b></span>
+    <span class="badge" id="live" title="Collector status">LOADING</span>
+    <span class="spacer"></span>
+    <nav class="nav" aria-label="Sections"><a href="#flowh">AI flow</a><a href="#cfh">Platform</a><a href="#billing">Billing</a></nav>
+    <div class="seg" role="group" aria-label="Time range" id="range">
+      <button aria-pressed="true" data-r="24h">24h</button>
+      <button aria-pressed="false" data-r="7d">7d</button>
+      <button aria-pressed="false" data-r="30d">30d</button>
+    </div>
+    <button class="iconbtn" id="theme" aria-label="Toggle theme" title="Toggle light / dark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path id="themeicon" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="pagehead">
+    <div>
+      <h1 id="title">AI &amp; Edge Usage</h1>
+      <p>Token flow from every app through Cloudflare AI Gateway (or directly) to the provider and model that served it, next to the Cloudflare platform usage underneath. Refreshes every 5 minutes. Hover any node or ribbon to trace a route; click an app to focus the whole page on it.</p>
+    </div>
+    <span class="filterchip" id="chip">Focused on <b id="chipname"></b><button id="chipclear" aria-label="Clear filter">×</button></span>
+  </div>
+
+  <!-- KPI strip -->
+  <section class="kpis" id="kpis" aria-label="Key metrics"></section>
+
+  <!-- Model end-of-life callout: only shown when a model in use is deprecated, retired or near retirement -->
+  <section class="card life" id="life" aria-labelledby="lifeh" hidden>
+    <div class="cardhead">
+      <div><h2 id="lifeh">Model lifecycle</h2><div class="sub">Models in use in this range that are retired, deprecated or close to their earliest retirement date · config/model-lifecycle.json</div></div>
+    </div>
+    <div class="liferows" id="liferows"></div>
+  </section>
+
+  <!-- Hero flow graph -->
+  <section class="card hero" aria-labelledby="flowh">
+    <div class="cardhead">
+      <div>
+        <h2 id="flowh">AI request flow</h2>
+        <div class="sub">App → AI Gateway → Provider → Model · ribbon width and colour = tokens · particles = live tokens per minute (last hour)</div>
+      </div>
+      <div class="legend">
+        <span>fewer tokens</span><span class="bar"></span><span>more</span>
+        <span style="width:10px"></span>
+        <span class="dash"></span><span>skips the gateway</span>
+        <span style="width:10px"></span>
+        <span class="dot"></span><span>tokens / min, last hour</span>
+      </div>
+    </div>
+    <div class="flow-wrap" id="flowwrap">
+      <div class="flow-stage motion" id="stage">
+        <svg id="flowsvg" role="img" aria-label="Sankey diagram of AI traffic"></svg>
+        <canvas id="flowcanvas" aria-hidden="true"></canvas>
+        <div class="tip" id="tip"></div>
+        <div class="empty" id="flowempty"></div>
+      </div>
+    </div>
+    <div class="hint">Dashed ribbons call a provider directly and are invisible to AI Gateway logging and caching. Scroll sideways on small screens.</div>
+  </section>
+
+  <div class="grid g-2">
+    <!-- Spend by source -->
+    <section class="card" aria-labelledby="spendh">
+      <div class="cardhead">
+        <div><h2 id="spendh">Spend by source</h2><div class="sub">Where each dollar is measured, and which API the collector reads it from</div></div>
+      </div>
+      <div id="sources"></div>
+      <div class="callout" id="srcnote"></div>
+    </section>
+
+    <!-- Model leaderboard -->
+    <section class="card" aria-labelledby="modelh">
+      <div class="cardhead">
+        <div><h2 id="modelh">Model leaderboard</h2><div class="sub">Tokens (log) × cost · bubble area = requests · colour = token heat</div></div>
+      </div>
+      <div class="bubble-wrap"><svg class="bubble" id="bubble"></svg></div>
+    </section>
+  </div>
+
+  <!-- Per-app table -->
+  <section class="card" style="margin-top:16px" aria-labelledby="apph">
+    <div class="cardhead">
+      <div><h2 id="apph">Usage by app</h2><div class="sub">Click a row to focus the dashboard on that app</div></div>
+    </div>
+    <div class="tscroll">
+      <table id="apptable">
+        <thead><tr>
+          <th>App</th><th class="r">Flows</th><th>Models</th><th class="r">Tokens</th><th class="r">Cached</th><th class="r">Cost</th><th>Via gateway</th><th>Trend</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Cloudflare platform -->
+  <!-- Attribution gaps: unmatched API keys and resources, so they can be added to the config -->
+  <section class="card" id="gaps" style="margin-top:16px" aria-labelledby="gapsh" hidden>
+    <div class="cardhead">
+      <div><h2 id="gapsh">Attribution gaps</h2><div class="sub">Usage in this range that matched no app. Add each name to the matching field of an app in your <span class="mono">config/&lt;profile&gt;.json</span>, then redeploy. <a href="https://github.com/WeaveHubHQ/cloudflare-ai-usage-dashboard#attribute-api-keys-and-resources" target="_blank" rel="noopener">How to</a></div></div>
+    </div>
+    <div class="tscroll"><table id="gaptable"><thead><tr><th>Config field</th><th>Name to add</th><th>What it is</th><th class="r">Tokens</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="card" style="margin-top:16px" aria-labelledby="cfh">
+    <div class="cardhead">
+      <div><h2 id="cfh">Cloudflare platform usage</h2><div class="sub">Account totals against the Workers Paid included allowance (pro-rated to the range), then per app · <span class="mono">GraphQL Analytics API</span></div></div>
+      <span class="src" id="cfrange"></span>
+    </div>
+    <div class="gauges" id="gauges"></div>
+    <div class="tscroll">
+      <table id="cftable">
+        <thead><tr>
+          <th>App</th><th class="r">Workers req</th><th class="r">CPU ms</th><th class="r">D1 reads</th><th class="r">D1 writes</th><th class="r">D1 storage</th><th class="r">R2 storage</th><th class="r">R2 class A</th><th class="r">R2 class B</th><th class="r">KV reads</th><th class="r">Queues</th><th class="r">DO req</th><th class="r">Vectorize</th><th class="r">AI neurons</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- Cloudflare billing -->
+  <section class="card anchor" id="billing" style="margin-top:16px" aria-labelledby="billh">
+    <div class="cardhead">
+      <div><h2 id="billh">Cloudflare billing <span class="badge" style="vertical-align:2px;margin-left:6px">ESTIMATE</span></h2><div class="sub">Estimated from usage × list price above the included allowance (config/prices.json), split across apps by attribution. Not an invoice.</div></div>
+      <span class="src" id="billrange"></span>
+    </div>
+    <div class="bkpis" id="bkpis"></div>
+
+    <div class="cardhead" style="margin-top:8px">
+      <div><h2 style="font-size:14px">App × component</h2><div class="sub" id="mxsub"></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><div class="toggle" id="mxmode"><button aria-pressed="true" data-v="usd">$ spend</button><button aria-pressed="false" data-v="units">Usage</button></div><div class="toggle" id="colsort"><button aria-pressed="true" data-v="canon">Canonical columns</button><button aria-pressed="false" data-v="total">Columns by total</button></div></div>
+    </div>
+    <div class="tscroll"><table class="mx" id="matrix"><thead></thead><tbody></tbody><tfoot></tfoot></table></div>
+
+    <div class="grid g-2">
+      <div>
+        <div class="cardhead">
+          <div><h2 style="font-size:14px">Spend per app</h2><div class="sub">Stacked by component</div></div>
+          <div class="toggle" id="stackmode"><button aria-pressed="true" data-v="usd">$ spend</button><button aria-pressed="false" data-v="pct">% of app's bill</button></div>
+        </div>
+        <div class="stack" id="stack"></div>
+        <div class="klegend" id="klegend"></div>
+      </div>
+      <div>
+        <div class="cardhead">
+          <div><h2 style="font-size:14px">Bill composition</h2><div class="sub">Treemap · area = $</div></div>
+          <div class="toggle" id="tmmode"><button aria-pressed="true" data-v="comp">Component → app</button><button aria-pressed="false" data-v="app">App → component</button></div>
+        </div>
+        <div class="tm" id="treemap"></div>
+      </div>
+    </div>
+
+    <div class="cardhead" style="margin-top:24px">
+      <div><h2 style="font-size:14px">Included allowance vs. overage</h2><div class="sub">Teal = inside the included allowance, ember = billed overage · marker = allowance · apps listed are the ones whose usage crossed the line</div></div>
+    </div>
+    <div class="allow" id="allow"></div>
+
+    <div class="note" id="attrnote">
+      <h3>How attribution works</h3>
+      Cloudflare bills at the <b>account</b> level, so nothing here is a per-app invoice. Every five minutes the collector reads usage from the <code>GraphQL Analytics API</code> and maps each Worker script, D1 database, R2 bucket, KV namespace, queue, Durable Object namespace, Vectorize index, Workers-for-Platforms dispatch namespace and AI gateway to an app using the patterns in the dashboard config. Each component's overage is priced at list rates and split in proportion to each app's share of its units. Resources that match no pattern land in <b>Unattributed</b>; infrastructure marked shared in the config is grouped under <b>Shared / platform</b>. Workers AI analytics carry no script name, so binding traffic is attributed by model.
+    </div>
+  </section>
+  <div class="btip" id="btip"></div>
+
+  <p class="foot" id="foot"></p>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

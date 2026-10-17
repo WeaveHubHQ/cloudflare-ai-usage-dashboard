@@ -1,0 +1,53 @@
+{
+  "name": "cloudflare-ai-usage-dashboard",
+  "version": "0.5.1",
+  "private": true,
+  "description": "AI and Cloudflare usage dashboard: a Worker that collects usage every 5 minutes and serves an animated dashboard.",
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "wrangler dev --test-scheduled --local-upstream localhost --var ENVIRONMENT:development",
+    "demo": "node scripts/seed-demo.mjs && wrangler dev --persist-to .wrangler/demo --local-upstream localhost --var ENVIRONMENT:development --var CONFIG_PROFILE:example",
+    "deploy": "npm run db:migrate:remote && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "hono": "^4.13.13"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261006.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.2",
+    "wrangler": "^4.151.1"
+  },
+  "cloudflare": {
+    "bindings": {
+      "DB": {
+        "description": "D1 database for usage rollups. Created for you."
+      },
+      "CF_ACCOUNT_ID": {
+        "description": "Your Cloudflare **account ID** (dashboard \u2192 account home \u2192 right sidebar)."
+      },
+      "CF_API_TOKEN": {
+        "description": "A **read-only** API token scoped to this account: `Account Analytics: Read`, `D1: Read`, `Workers KV Storage: Read`, `Queues: Read`, `Workers Scripts: Read`. See the [README](https://github.com/WeaveHubHQ/cloudflare-ai-usage-dashboard#1-create-a-read-only-cloudflare-api-token)."
+      },
+      "ANTHROPIC_ADMIN_KEY": {
+        "description": "Optional. Anthropic **Admin** key (`sk-ant-admin01-\u2026`) for direct Claude API usage. Enter `none` to skip."
+      },
+      "OPENAI_ADMIN_KEY": {
+        "description": "Optional. OpenAI **Admin** key restricted to usage read. Enter `none` to skip."
+      },
+      "CONFIG_PROFILE": {
+        "description": "Which `config/<profile>.json` maps your resources to apps. Start with `example`."
+      }
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WeaveHubHQ/cloudflare-ai-usage-dashboard.git"
+  }
+}
